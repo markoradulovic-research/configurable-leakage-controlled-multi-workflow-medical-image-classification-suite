@@ -4,7 +4,7 @@ A highly configurable Google Colab notebook comparing three leakage-controlled D
 Repository Contents:
 This repository consists of two primary components:
 
-Code_1 (DICOM to NRRD Conversion): A script that converts raw DICOM data into paired NRRD image and mask files.
+Code_1 (DICOM or MRB to NRRD Conversion): A script that converts raw DICOM or MRB data into paired NRRD image and mask files.
 
 Code_2 (Analysis Pipeline): The main workflow notebook that inputs the created NRRD pairs of image and mask files for analysis.
 
