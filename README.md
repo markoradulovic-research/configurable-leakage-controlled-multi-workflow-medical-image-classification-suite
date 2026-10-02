@@ -8,7 +8,29 @@ Code_1 (DICOM to NRRD Conversion): A script that converts raw DICOM data into pa
 
 Code_2 (Analysis Pipeline): The main workflow notebook that inputs the created NRRD pairs of image and mask files for analysis.
 
-Instructions and Settings
+CNN WEIGHTS
+Download the pretrained RadImageNet weights for all CNN architectures and place the files in the directory specified by WEIGHTS_BASE:
+WEIGHTS_BASE = "/content/drive/MyDrive/DATA/weights"
+You can change WEIGHTS_BASE in script 2 to point to any directory in your Google Drive.
+
+DenseNet121
+https://huggingface.co/Lab-Rasool/RadImageNet/resolve/main/DenseNet121.pt?download=true
+
+ResNet50
+https://huggingface.co/Lab-Rasool/RadImageNet/resolve/main/ResNet50.pt?download=true
+
+ResNet18
+https://huggingface.co/convergedmachine/RadImagenet/resolve/main/resnet18.pth?download=true
+
+ResNet10t
+https://huggingface.co/convergedmachine/RadImagenet/resolve/main/resnet10t.pth?download=true
+
+InceptionV3
+https://huggingface.co/Lab-Rasool/RadImageNet/resolve/main/InceptionV3.pt?download=true
+
+
+
+Further Instructions and Settings
 Detailed instructions for settings and code use are provided in the comments within the code itself.
 
 How to Cite
