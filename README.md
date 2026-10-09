@@ -1,6 +1,6 @@
 # configurable-leakage-controlled-multi-workflow-medical-image-classification-suite
 
-## Main settings: a simple guide
+## Main settings:
 
 Start with **Section 0, cell 3: Settings, package installation and shared helper functions**. Go through the settings below in order, change the values you need, and then choose **Run all** in Google Colab. `True` means enabled; `False` means disabled. A segmentation, or mask, marks the tumour area in an image.
 
