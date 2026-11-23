@@ -46,7 +46,8 @@ Each workflow can be switched on or off independently. All enabled workflows use
 | `fmcib_3d` | FMCIB, pretrained on CT lesions | 3D block | Yes | Yes |
 | `choi_idh` | Published brain-tumour (IDH) network | 2D slices | No, features only | Yes |
 
-Different prefixes for the same architecture, such as `radimagenet_resnet10t` and `imagenet_resnet10t`, indicate different pretrained weights. Listing both in `SHARED_BACKBONES` compares the 2 pretraining sources on the same patients, the same split and the same prepared images, so only the weights differ. Both ImageNet and RadImageNet weights are available for 5 architectures: ResNet10t, ResNet18, ResNet50, DenseNet121 and InceptionV3. Pretraining protocols are compared in the same way, across supervised natural images (ImageNet), supervised radiology images (RadImageNet), label-free self-supervised images (DINOv3), masked-autoencoder pretraining with supervised ImageNet fine-tuning (ConvNeXt-V2), 3D medical pretraining (MARS on MRI and FMCIB on CT lesions) and a published task-specific network (`choi_idh`). Sections 1 and 3 report and skip any backbone they cannot train.
+Different prefixes for the same architecture, such as radimagenet_resnet10t and imagenet_resnet10t, indicate different pretrained weights. These matched pairs are the only case in which pretraining is the single difference, and both ImageNet and RadImageNet weights exist for 5 architectures: ResNet10t, ResNet18, ResNet50, DenseNet121 and InceptionV3. 
+Every backbone listed in SHARED_BACKBONES is scored on the same patients, the same split and the same prepared images, so all results in a run are comparable, but between different architectures the architecture and the pretraining differ together. The available pretraining protocols are supervised natural images (ImageNet), supervised radiology images (RadImageNet), label-free self-supervised images (DINOv3), masked-autoencoder pretraining with supervised ImageNet fine-tuning (ConvNeXt-V2), 3D medical pretraining (MARS on MRI and FMCIB on CT lesions) and a published task-specific network (choi_idh). Sections 1 and 3 report and skip any backbone they cannot train.
 
 ### Preprocessing options
 
@@ -54,7 +55,7 @@ Different prefixes for the same architecture, such as `radimagenet_resnet10t` an
 | --- | --- | --- |
 | Lesion analysed | `ANALYZE_LARGEST_LESION_ONLY` | Largest piece of the mask, or all pieces together |
 | Lesion-size limit | `MAX_LESION_VOLUME_ML` | Exclude patients above a volume in millilitres, or `None` |
-| Viewing planes | `SLICE_PLANES` | Any combination of axial, sagittal and coronal |
+| Planes analyzed | `SLICE_PLANES` | Any combination of axial, sagittal and coronal |
 | Image size | `CNN_INPUT_SIZE_SHARED` | 128 or 224 pixels |
 | Orientation | `USE_LPS_REORIENTATION`, `USE_OBLIQUE_CORRECTION` | Standard orientation and straightening of tilted scans, each on or off |
 | Voxel size | `CNN_VOXEL_MODE`, `CNN_RESAMPLE_SPACING_MM` | Keep each scan's own voxel size, or resample all scans to one size |
@@ -71,9 +72,9 @@ Different prefixes for the same architecture, such as `radimagenet_resnet10t` an
 
 | Feature type | Where it comes from | Used by |
 | --- | --- | --- |
-| CNN features | Each backbone runs with frozen weights over the chosen planes. Slice features are averaged into 1 vector per patient. 3D backbones give 1 vector per volume. | Section 2 |
+| CNN features | Each backbone runs with frozen weights over the slices in chosen planes. Features calculated in each slice are averaged into 1 vector per patient. 3D backbones give 1 vector per volume. | Section 2 |
 | Global and local 3D features | `MARS_USE_GLOBAL_LOCAL`, `FMCIB_USE_GLOBAL_LOCAL`. The whole lesion plus 7 smaller views inside it, through 1 shared network. | Sections 1, 2 and 3 |
-| Radiomics features | PyRadiomics, computed in 3D on the native grid with `RUN_RADIOMICS`. Shape, intensity and texture classes, with Laplacian-of-Gaussian filters. | Section 2 |
+| Radiomics features | PyRadiomics, computed in 3D from the original image rather than the CNN inputs, with its own resampling to 1 mm voxels (RUN_RADIOMICS). Shape, intensity and texture classes, the intensity and texture ones also on Laplacian-of-Gaussian filtered images at sigma 1 mm, 2 mm and 3 mm. | Section 2 |
 | CNN plus radiomics | 1 combined table per CNN feature table (early fusion). | Section 2 |
 | Late fusion | The best CNN model and the best radiomics model, averaged after standardisation. | Section 2 |
 | Lesion tokens | The full 3D feature grid of each patient, stored once. | Section 3b |
@@ -117,7 +118,7 @@ ENABLE_NIFTI_PHASES  = False   # Option B: NIfTI images and masks in separate fo
 
 | Option | Use it when | Development and test split comes from |
 | --- | --- | --- |
-| **A. Split folders** | Each patient's image and mask files are stored together and the development and test patients are in separate folders. Usually NRRD files produced by Code_1. | The folder a patient is in |
+| **A. Split folders** | Each patient's image and mask files are stored together and the development and test patients are in separate folders. Such NRRD files can be produced from DICOM using Code. 1)_DICOM_MRB_toimage_NRRD... script which is also in this repository. | The folder a patient is in |
 | **B. NIfTI folders** | Images and masks are NIfTI files kept in 2 separate folder trees, as in many public datasets. | A `split` column in the label file |
 
 Each option has its own label file and results folder. The notebook picks the correct ones from the switch, so both blocks can stay filled in.
@@ -246,7 +247,7 @@ CROP_MIN_FOV_MM       = None    # for example 80
 TUMOR_CONTEXT_MODE    = "MIN_BBOX"   # "MIN_BBOX" or "ROI_ONLY"
 ```
 
-`SLICE_PLANES` selects the viewing directions used for each patient. Choose 1 plane or any combination of `"axial"` (horizontal slice), `"sagittal"` (side view) and `"coronal"` (front view). For each chosen plane the code takes the slice where the analysed tumour is largest. Keep the comma in a single-plane setting, such as `("coronal",)`. These settings do not affect the 3D backbones, which read a block around the whole lesion.
+SLICE_PLANES selects the anatomical planes in which slices are taken for each patient. Choose 1 plane or any combination of "axial" (horizontal slice), "sagittal" (side view) and "coronal" (front view). For each chosen plane the code takes the slice where the analysed tumour is largest. Keep the comma in a single-plane setting, such as ("coronal",). The plane names mean the same anatomical direction in every patient only when USE_LPS_REORIENTATION = True, so keep that switch on whenever planes are compared. These settings do not affect the 3D backbones, which read a block around the whole lesion.
 
 For each plane, a square crop around the tumour includes a small safety margin and is resized to `CNN_INPUT_SIZE_SHARED` pixels. The whole tumour of that plane always lies inside the crop.
 
