@@ -1,19 +1,25 @@
 # configurable-leakage-controlled-multi-workflow-medical-image-classification-suite
 
-A configurable Google Colab notebook that compares leakage-controlled deep-learning and machine-learning workflows for medical image classification. Besides deep features, this script can also extract radiomics (PyRadiomics) features.
-"Leakage-controlled" means test patients are never used for training or choosing settings. Everything runs in one notebook and the main settings are grouped at the top. Researchers who do not write code can use it and developers can change every part of it.
+This is a configurable Google Colab notebook that compares leakage-controlled deep-learning and machine-learning workflows for medical image classification. Besides deep features, this script can also extract radiomics (PyRadiomics) features.
+"Leakage-controlled" means test patients or images are never used for training or choosing settings. Everything runs in one notebook and the main settings are grouped at the top. Researchers who do not write code can use it easily and developers can change any part of it.
 
-This script provides 14 network architectures and 19 pretrained weight sets, both 2D and 3D, because some architectures come with a choice of pretraining, such as ImageNet and RadImageNet.
+This script provides 14 network architectures and 19 pretrained weight sets, both 2D and 3D. Some architectures come with a choice of pretraining, such as ImageNet and RadImageNet.
 There are three main workflows: FROZEN CNN, CNN+ML and FINETUNE.
 Numerous simple switches allow customization of each step.
 For more details, see below:
-
 
 ---
 
 ## Overview of the code
 
-**Radiomics features.** Besides deep features, this notebook can also extract PyRadiomics features with `RUN_RADIOMICS = True`, computed in 3D on the native image grid of every patient. They are integrated in Section 2, the `efficient_ML` workflow, in 3 ways: as a radiomics-only feature table, as 1 early-fusion table per CNN feature table and as a late-fusion average of the best radiomics model with the best CNN model. Setting 11 describes the radiomics options.
+**Radiomics features.** Besides deep features, this notebook can also extract PyRadiomics features with `RUN_RADIOMICS = True`, computed in 3D on the native image grid of every patient. 
+They are integrated in Section 2, the efficient_ML workflow, as 3 further kinds of input, each modelled with the same patients, the same split and the same nested cross-validation as the CNN feature tables:
+
+1) Radiomics alone. A table that holds radiomics features only, one row per patient.
+2) Early fusion. For each CNN feature table, the radiomics columns of the same patients are placed next to the CNN columns, so each patient is described by both feature types in a wider table and classifiers are trained on them together. These tables are written as fused_radiomics__<CNN table name>.csv.
+3) Late fusion. No merging of CNN and radiomics features. The best model on CNN features and the best model on radiomics features are fitted separately, their predicted scores are standardised and the two scores are averaged into one prediction per patient.
+
+RADIOMICS_TABLES setting chooses which of the two tables under 1) and 2) are built and RUN_LATE_FUSION switches late fusion on.
 
 ### Workflows
 
