@@ -1,11 +1,10 @@
 # configurable-leakage-controlled-multi-workflow-medical-image-classification-suite
 
-This is a configurable Google Colab notebook that compares leakage-controlled deep-learning and machine-learning workflows for medical image classification. Besides deep features, this script can also extract radiomics (PyRadiomics) features.
-"Leakage-controlled" means test patients or images are never used for training or choosing settings. Everything runs in one notebook and the main settings are grouped at the top. Researchers who do not write code can use it easily and developers can change any part of it.
-
-This script provides 14 network architectures and 19 pretrained weight sets, both 2D and 3D. Some architectures come with a choice of pretraining, such as ImageNet and RadImageNet.
-There are three main workflows: FROZEN CNN, CNN+ML and FINETUNE.
-Numerous simple switches allow customization of each step.
+This large, highly configurable Google Colab notebook implements three leakage-controlled workflows for medical image classification: FROZEN CNN, CNN+ML and FINETUNE. 
+Over 230 settings and switches allow detailed customization, even for users without coding experience. 
+In addition to deep features, the notebook can extract radiomic features using PyRadiomics. 
+It supports 14 network architectures and 19 pretrained weight sets, covering both 2D and 3D models. 
+Some architectures offer a choice of pretraining sources, such as ImageNet and RadImageNet.
 For more details, see below:
 
 ---
